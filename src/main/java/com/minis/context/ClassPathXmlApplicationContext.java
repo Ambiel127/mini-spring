@@ -1,6 +1,5 @@
 package com.minis.context;
 
-import com.minis.beans.BeanDefinition;
 import com.minis.beans.BeanFactory;
 import com.minis.beans.BeansException;
 import com.minis.beans.SimpleBeanFactory;
@@ -25,7 +24,7 @@ public class ClassPathXmlApplicationContext implements BeanFactory {
     public ClassPathXmlApplicationContext(String fileName) {
         // 解析 XML 文件中的内容
         Resource resource = new ClassPathXmlResource(fileName);
-        BeanFactory beanFactory = new SimpleBeanFactory();
+        SimpleBeanFactory beanFactory = new SimpleBeanFactory();
         XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(beanFactory);
 
         // 读取 BeanDefinition 的配置信息，实例化 Bean，然后把它注入到 BeanFactory 容器中。
@@ -34,12 +33,32 @@ public class ClassPathXmlApplicationContext implements BeanFactory {
     }
 
     @Override
-    public Object getBean(String name) throws BeansException {
-        return this.beanFactory.getBean(name);
+    public Object getBean(String beanName) throws BeansException {
+        return this.beanFactory.getBean(beanName);
     }
 
     @Override
-    public void registerBeanDefinition(BeanDefinition beanDefinition) {
-        this.beanFactory.registerBeanDefinition(beanDefinition);
+    public void registerBean(String beanName, Object obj) {
+        this.beanFactory.registerBean(beanName, obj);
+    }
+
+    @Override
+    public boolean containsBean(String beanName) {
+        return this.beanFactory.containsBean(beanName);
+    }
+
+    @Override
+    public boolean isSingleton(String beanName) {
+        return false;
+    }
+
+    @Override
+    public boolean isPrototype(String beanName) {
+        return false;
+    }
+
+    @Override
+    public Class<?> getType(String beanName) {
+        return null;
     }
 }

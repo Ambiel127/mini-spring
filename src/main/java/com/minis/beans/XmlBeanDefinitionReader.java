@@ -7,13 +7,14 @@ import org.dom4j.Element;
  * 将解析好的 xml Resource 转换成 BeanDefinition
  *
  * @author <a href="mailto:ambiel127@163.com">Matianhao</a>
+ * @version 1.1 构造注入的 beanFactory 暂时改为其实现类 SimpleBeanFactory，降低了扩展性。因为注册 beanDefinition 的方法被抽到了 BeanDefinitionRegistry 接口，后面会一步步演变。
  * @since 1.0
  */
 public class XmlBeanDefinitionReader {
 
-    private BeanFactory beanFactory;
+    private SimpleBeanFactory beanFactory;
 
-    public XmlBeanDefinitionReader(BeanFactory beanFactory) {
+    public XmlBeanDefinitionReader(SimpleBeanFactory beanFactory) {
         this.beanFactory = beanFactory;
     }
 
@@ -29,7 +30,7 @@ public class XmlBeanDefinitionReader {
             BeanDefinition beanDefinition = new BeanDefinition(beanId, beanName);
 
             // 注入到 BeanFactory 容器
-            beanFactory.registerBeanDefinition(beanDefinition);
+            beanFactory.registerBeanDefinition(beanId, beanDefinition);
         }
     }
 
