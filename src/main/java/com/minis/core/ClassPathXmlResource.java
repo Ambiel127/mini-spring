@@ -1,5 +1,6 @@
 package com.minis.core;
 
+import com.minis.beans.factory.xml.XmlBeanDefinitionReader;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -12,7 +13,7 @@ import java.util.Iterator;
  * 解析 xml 类型 Resource
  *
  * @author <a href="mailto:ambiel127@163.com">Matianhao</a>
- * @see com.minis.beans.XmlBeanDefinitionReader 将解析好的 xml Resource 转换成 BeanDefinition
+ * @see XmlBeanDefinitionReader 将解析好的 xml Resource 转换成 BeanDefinition
  * @since 1.0
  */
 public class ClassPathXmlResource implements Resource {

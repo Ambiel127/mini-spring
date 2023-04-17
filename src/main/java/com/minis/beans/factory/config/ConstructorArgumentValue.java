@@ -1,4 +1,4 @@
-package com.minis.beans;
+package com.minis.beans.factory.config;
 
 /**
  * 构造器注入属性类
@@ -6,7 +6,7 @@ package com.minis.beans;
  * @author <a href="mailto:ambiel127@163.com">Matianhao</a>
  * @since 1.1
  */
-public class ArgumentValue {
+public class ConstructorArgumentValue {
 
     private String type;
 
@@ -14,15 +14,15 @@ public class ArgumentValue {
 
     private Object value;
 
-    public ArgumentValue() {
+    public ConstructorArgumentValue() {
     }
 
-    public ArgumentValue(String type, Object value) {
+    public ConstructorArgumentValue(String type, Object value) {
         this.type = type;
         this.value = value;
     }
 
-    public ArgumentValue(String type, String name, Object value) {
+    public ConstructorArgumentValue(String type, String name, Object value) {
         this.type = type;
         this.name = name;
         this.value = value;
