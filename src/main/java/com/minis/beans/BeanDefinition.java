@@ -21,9 +21,9 @@ public class BeanDefinition {
     private String className;
 
     /**
-     * 是否在延迟初始化，默认false
+     * 是否延迟初始化，默认 true 延迟初始化
      */
-    private boolean lazyInit = false;
+    private boolean lazyInit = true;
     /**
      * 声明初始化方法
      */

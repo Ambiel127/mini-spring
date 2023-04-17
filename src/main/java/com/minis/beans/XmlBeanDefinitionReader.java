@@ -3,6 +3,9 @@ package com.minis.beans;
 import com.minis.core.Resource;
 import org.dom4j.Element;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * 将解析好的 xml Resource 转换成 BeanDefinition
  *
@@ -24,10 +27,47 @@ public class XmlBeanDefinitionReader {
     public void loadBeanDefinitions(Resource resource) {
         while (resource.hasNext()) {
             // 加载解析的内容，构建 BeanDefinition
-            Element next = (Element) resource.next();
-            String beanId = next.attributeValue("id");
-            String beanName = next.attributeValue("class");
+            Element element = (Element) resource.next();
+            String beanId = element.attributeValue("id");
+            String beanName = element.attributeValue("class");
             BeanDefinition beanDefinition = new BeanDefinition(beanId, beanName);
+
+            // 处理构造器参数
+            List<Element> constructorElements = element.elements("constructor-arg");
+            ArgumentValues avs = new ArgumentValues();
+            for (Element e : constructorElements) {
+                String type = e.attributeValue("type");
+                String name = e.attributeValue("name");
+                String value = e.attributeValue("value");
+                ArgumentValue av = new ArgumentValue(type, name, value);
+                avs.addArgumentValue(av);
+            }
+            beanDefinition.setConstructorArgumentValues(avs);
+
+            // 处理属性
+            List<Element> propertyElements = element.elements("property");
+            PropertyValues pvs = new PropertyValues();
+            List<String> refs = new ArrayList<>();
+            for (Element e : propertyElements) {
+                String type = e.attributeValue("type");
+                String name = e.attributeValue("name");
+                String value = e.attributeValue("value");
+                String ref = e.attributeValue("ref");
+
+                boolean isRef = false;
+                if (ref != null && !"".equals(ref)) {
+                    isRef = true;
+                    value = ref;
+                    refs.add(ref);
+                }
+                PropertyValue pv = new PropertyValue(type, name, value, isRef);
+                pvs.addPropertyValue(pv);
+            }
+            beanDefinition.setPropertyValues(pvs);
+
+            // 设置 bean 之间依赖关系
+            String[] refArray = refs.toArray(new String[0]);
+            beanDefinition.setDependsOn(refArray);
 
             // 注入到 BeanFactory 容器
             beanFactory.registerBeanDefinition(beanId, beanDefinition);

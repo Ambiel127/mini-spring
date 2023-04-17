@@ -14,6 +14,11 @@ public class PropertyValue {
 
     private Object value;
 
+    /**
+     * 是否为引用类型
+     */
+    private boolean isRef;
+
     public PropertyValue() {
     }
 
@@ -22,10 +27,11 @@ public class PropertyValue {
         this.value = value;
     }
 
-    public PropertyValue(String type, String name, Object value) {
+    public PropertyValue(String type, String name, Object value, boolean isRef) {
         this.type = type;
         this.name = name;
         this.value = value;
+        this.isRef = isRef;
     }
 
     public String getType() {
@@ -50,5 +56,13 @@ public class PropertyValue {
 
     public void setValue(Object value) {
         this.value = value;
+    }
+
+    public boolean isRef() {
+        return isRef;
+    }
+
+    public void setRef(boolean ref) {
+        isRef = ref;
     }
 }

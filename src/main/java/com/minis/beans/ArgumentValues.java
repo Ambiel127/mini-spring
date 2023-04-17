@@ -1,6 +1,7 @@
 package com.minis.beans;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 封装操作方法，简化调用
@@ -11,50 +12,24 @@ import java.util.*;
  */
 
 public class ArgumentValues {
-    private final Map<Integer, ArgumentValue> indexedArgumentValues = new HashMap<>(0);
-    private final List<ArgumentValue> genericArgumentValues = new LinkedList<>();
+    private final List<ArgumentValue> argumentValueList = new ArrayList<ArgumentValue>();
 
     public ArgumentValues() {
     }
 
-    private void addArgumentValue(Integer key, ArgumentValue newValue) {
-        this.indexedArgumentValues.put(key, newValue);
-    }
-
-    public boolean hasIndexedArgumentValue(int index) {
-        return this.indexedArgumentValues.containsKey(index);
+    public void addArgumentValue(ArgumentValue argumentValue) {
+        this.argumentValueList.add(argumentValue);
     }
 
     public ArgumentValue getIndexedArgumentValue(int index) {
-        return this.indexedArgumentValues.get(index);
-    }
-
-    public void addGenericArgumentValue(String type, Object value) {
-        this.genericArgumentValues.add(new ArgumentValue(type, value));
-    }
-
-    private void addGenericArgumentValue(ArgumentValue newValue) {
-        if (newValue.getName() != null) {
-            this.genericArgumentValues.removeIf(currentValue -> newValue.getName().equals(currentValue.getName()));
-        }
-        this.genericArgumentValues.add(newValue);
-    }
-
-    public ArgumentValue getGenericArgumentValue(String requiredName) {
-        for (ArgumentValue value : this.genericArgumentValues) {
-            if (value.getName() != null && !value.getName().equals(requiredName)) {
-                continue;
-            }
-            return value;
-        }
-        return null;
+        return this.argumentValueList.get(index);
     }
 
     public int getArgumentCount() {
-        return this.genericArgumentValues.size();
+        return (this.argumentValueList.size());
     }
 
     public boolean isEmpty() {
-        return this.genericArgumentValues.isEmpty();
+        return (this.argumentValueList.isEmpty());
     }
 }

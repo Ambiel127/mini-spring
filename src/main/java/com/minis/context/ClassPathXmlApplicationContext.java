@@ -15,13 +15,13 @@ import com.minis.core.Resource;
  */
 public class ClassPathXmlApplicationContext implements BeanFactory {
 
-    private BeanFactory beanFactory;
+    private SimpleBeanFactory beanFactory;
 
     /**
      * 获取、注册 bean 的能力交给 BeanFactory
      * 读取、解析配置的能力交给 Resource 和 Reader
      */
-    public ClassPathXmlApplicationContext(String fileName) {
+    public ClassPathXmlApplicationContext(String fileName, boolean isRefresh) {
         // 解析 XML 文件中的内容
         Resource resource = new ClassPathXmlResource(fileName);
         SimpleBeanFactory beanFactory = new SimpleBeanFactory();
@@ -30,6 +30,10 @@ public class ClassPathXmlApplicationContext implements BeanFactory {
         // 读取 BeanDefinition 的配置信息，实例化 Bean，然后把它注入到 BeanFactory 容器中。
         reader.loadBeanDefinitions(resource);
         this.beanFactory = beanFactory;
+
+        if (isRefresh) {
+            this.beanFactory.refresh();
+        }
     }
 
     @Override

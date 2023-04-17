@@ -30,10 +30,6 @@ public class PropertyValues {
         this.propertyValueList.add(pv);
     }
 
-    public void addPropertyValue(String propertyName, Object propertyValue) {
-        addPropertyValue(new PropertyValue(propertyName, propertyValue));
-    }
-
     public void removePropertyValue(PropertyValue pv) {
         this.propertyValueList.remove(pv);
     }
@@ -43,16 +39,14 @@ public class PropertyValues {
     }
 
     public PropertyValue[] getPropertyValues() {
-        return this.propertyValueList.toArray(new PropertyValue[this.propertyValueList.size()]);
+        return this.propertyValueList.toArray(new PropertyValue[0]);
     }
 
     public PropertyValue getPropertyValue(String propertyName) {
-        for (PropertyValue pv : this.propertyValueList) {
-            if (pv.getName().equals(propertyName)) {
-                return pv;
-            }
-        }
-        return null;
+        return this.propertyValueList.stream()
+                .filter(item -> item.getName().equals(propertyName))
+                .findFirst()
+                .orElse(null);
     }
 
     public Object get(String propertyName) {
@@ -62,6 +56,14 @@ public class PropertyValues {
 
     public boolean contains(String propertyName) {
         return getPropertyValue(propertyName) != null;
+    }
+
+    public int getPropertyCount() {
+        return (this.propertyValueList.size());
+    }
+
+    public PropertyValue getIndexedPropertyValue(int index) {
+        return this.propertyValueList.get(index);
     }
 
     public boolean isEmpty() {
