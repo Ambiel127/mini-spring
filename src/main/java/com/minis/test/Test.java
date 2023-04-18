@@ -12,10 +12,9 @@ import com.minis.beans.BeansException;
 public class Test {
 
     public static void main(String[] args) throws BeansException {
-        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("beans.xml", true);
+        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
         AService aService = (AService) context.getBean("aService");
         aService.sayHello();
-        System.out.println(aService.toString());
     }
 
 }

@@ -4,7 +4,7 @@ import com.minis.beans.*;
 import com.minis.beans.factory.config.BeanDefinition;
 import com.minis.beans.factory.config.ConstructorArgumentValue;
 import com.minis.beans.factory.config.ConstructorArgumentValues;
-import com.minis.beans.factory.support.SimpleBeanFactory;
+import com.minis.beans.factory.support.AbstractBeanFactory;
 import com.minis.core.Resource;
 import org.dom4j.Element;
 
@@ -20,9 +20,9 @@ import java.util.List;
  */
 public class XmlBeanDefinitionReader {
 
-    private SimpleBeanFactory beanFactory;
+    private AbstractBeanFactory beanFactory;
 
-    public XmlBeanDefinitionReader(SimpleBeanFactory beanFactory) {
+    public XmlBeanDefinitionReader(AbstractBeanFactory beanFactory) {
         this.beanFactory = beanFactory;
     }
 
@@ -35,6 +35,7 @@ public class XmlBeanDefinitionReader {
             Element element = (Element) resource.next();
             String beanId = element.attributeValue("id");
             String beanName = element.attributeValue("class");
+            String initMehtod = element.attributeValue("init-method");
             BeanDefinition beanDefinition = new BeanDefinition(beanId, beanName);
 
             // 处理构造器参数
@@ -73,6 +74,9 @@ public class XmlBeanDefinitionReader {
             // 设置 bean 之间依赖关系
             String[] refArray = refs.toArray(new String[0]);
             beanDefinition.setDependsOn(refArray);
+
+            // 设置初始化方法
+            beanDefinition.setInitMethodName(initMehtod);
 
             // 注入到 BeanFactory 容器
             beanFactory.registerBeanDefinition(beanId, beanDefinition);

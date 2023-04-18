@@ -1,8 +1,9 @@
 package com.minis.context;
 
-import com.minis.beans.factory.BeanFactory;
 import com.minis.beans.BeansException;
-import com.minis.beans.factory.support.SimpleBeanFactory;
+import com.minis.beans.factory.BeanFactory;
+import com.minis.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
+import com.minis.beans.factory.config.AutowireCapableBeanFactory;
 import com.minis.beans.factory.xml.XmlBeanDefinitionReader;
 import com.minis.core.ClassPathXmlResource;
 import com.minis.core.Resource;
@@ -15,7 +16,11 @@ import com.minis.core.Resource;
  */
 public class ClassPathXmlApplicationContext implements BeanFactory {
 
-    private SimpleBeanFactory beanFactory;
+    private AutowireCapableBeanFactory beanFactory;
+
+    public ClassPathXmlApplicationContext(String fileName) {
+        this(fileName, true);
+    }
 
     /**
      * 获取、注册 bean 的能力交给 BeanFactory
@@ -24,7 +29,7 @@ public class ClassPathXmlApplicationContext implements BeanFactory {
     public ClassPathXmlApplicationContext(String fileName, boolean isRefresh) {
         // 解析 XML 文件中的内容
         Resource resource = new ClassPathXmlResource(fileName);
-        SimpleBeanFactory beanFactory = new SimpleBeanFactory();
+        AutowireCapableBeanFactory beanFactory = new AutowireCapableBeanFactory();
         XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(beanFactory);
 
         // 读取 BeanDefinition 的配置信息，实例化 Bean，然后把它注入到 BeanFactory 容器中。
@@ -32,8 +37,24 @@ public class ClassPathXmlApplicationContext implements BeanFactory {
         this.beanFactory = beanFactory;
 
         if (isRefresh) {
-            this.beanFactory.refresh();
+            refresh();
         }
+    }
+
+    private void refresh() {
+        // 注册 bean 处理器
+        registerBeanPostProcessor();
+
+        // Initialize other special beans in specific context subclasses.
+        onFresh();
+    }
+
+    private void registerBeanPostProcessor() {
+        this.beanFactory.addBeanPostProcessor(new AutowiredAnnotationBeanPostProcessor());
+    }
+
+    private void onFresh() {
+        this.beanFactory.refresh();
     }
 
     @Override

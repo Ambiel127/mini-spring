@@ -16,15 +16,16 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * BeanFactory 的简单实现
+ * 抽象 BeanFactory
  *
  * @author <a href="mailto:ambiel127@163.com">Matianhao</a>
  * @version 1.1
  * a) 继承管理单例 Bean 的默认实现类 DefaultSingletonBeanRegistry 用来实现 BeanFactory 的接口方法，确保通过 SimpleBeanFactory 创建的 Bean 默认就是单例的；
  * b) 实现 BeanDefinitionRegistry 接口，这样 SimpleBeanFactory 既是工厂同时也是仓库；
+ * @version 1.4  SimpleBeanFactory 废弃，演变为抽象类，在 getBean 过程中增加 beanPostProcessor 抽象方法进行处理；
  * @since 1.0
  */
-public class SimpleBeanFactory extends DefaultSingletonBeanRegistry implements BeanFactory, BeanDefinitionRegistry {
+public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry implements BeanFactory, BeanDefinitionRegistry {
 
     private Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>(256);
     private List<String> beanDefinitionNames = new ArrayList<>();
@@ -78,11 +79,17 @@ public class SimpleBeanFactory extends DefaultSingletonBeanRegistry implements B
         // 注册单例 bean
         registerSingleton(beanName, singleton);
 
-        // 预留 beanPostProcessor 位置
+        // 进行 beanPostProcessor 处理
         // step 1: postProcessBeforeInitialization
-        // step 2: afterPropertiesSet
-        // step 3: init-method
-        // step 4: postProcessAfterInitialization
+        applyBeanPostProcessorsBeforeInitialization(singleton, beanName);
+
+        // step 2: init-method
+        if (beanDefinition.getInitMethodName() != null && !"".equals(beanDefinition.getInitMethodName())) {
+            invokeInitMethod(beanDefinition, singleton);
+        }
+
+        // step 3: postProcessAfterInitialization
+        applyBeanPostProcessorsAfterInitialization(singleton, beanName);
 
         return singleton;
     }
@@ -275,4 +282,48 @@ public class SimpleBeanFactory extends DefaultSingletonBeanRegistry implements B
             }
         }
     }
+
+    /**
+     * 调用初始化方法
+     *
+     * @param beanDefinition bean 定义
+     * @param obj            bean 实例
+     */
+    private void invokeInitMethod(BeanDefinition beanDefinition, Object obj) {
+        Class<?> clz = obj.getClass();
+        Method method = null;
+        try {
+            method = clz.getMethod(beanDefinition.getInitMethodName());
+        } catch (NoSuchMethodException | SecurityException e) {
+            e.printStackTrace();
+        }
+        try {
+            method.invoke(obj);
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * bean 初始化之前
+     *
+     * @param existingBean bean 实例
+     * @param beanName bean 名称
+     * @return bean 实例
+     * @throws BeansException 异常
+     */
+    abstract public Object applyBeanPostProcessorsBeforeInitialization(Object existingBean, String beanName)
+            throws BeansException;
+
+    /**
+     * bean 初始化之后
+     *
+     * @param existingBean bean 实例
+     * @param beanName bean 名称
+     * @return bean 实例
+     * @throws BeansException 异常
+     */
+    abstract public Object applyBeanPostProcessorsAfterInitialization(Object existingBean, String beanName)
+            throws BeansException;
+
 }

@@ -1,5 +1,7 @@
 package com.minis.test;
 
+import com.minis.beans.factory.annotation.Autowired;
+
 /**
  * 测试 ref 属性
  *
@@ -7,14 +9,16 @@ package com.minis.test;
  * @since 1.3
  */
 public class BaseService {
-    private BaseBaseService bbs;
 
-    public BaseBaseService getBbs() {
-        return bbs;
+    @Autowired
+    private BaseBaseService baseBaseService;
+
+    public BaseBaseService getBaseBaseService() {
+        return baseBaseService;
     }
 
-    public void setBbs(BaseBaseService bbs) {
-        this.bbs = bbs;
+    public void setBaseBaseService(BaseBaseService baseBaseService) {
+        this.baseBaseService = baseBaseService;
     }
 
     public BaseService() {
@@ -22,6 +26,10 @@ public class BaseService {
 
     public void sayHello() {
         System.out.println("Base Service says hello");
-        bbs.sayHello();
+        baseBaseService.sayHello();
+    }
+
+    public void init() {
+        System.out.println("Base Service init method");
     }
 }
