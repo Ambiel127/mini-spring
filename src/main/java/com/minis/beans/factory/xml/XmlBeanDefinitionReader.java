@@ -35,7 +35,7 @@ public class XmlBeanDefinitionReader {
             Element element = (Element) resource.next();
             String beanId = element.attributeValue("id");
             String beanName = element.attributeValue("class");
-            String initMehtod = element.attributeValue("init-method");
+            String initMethod = element.attributeValue("init-method");
             BeanDefinition beanDefinition = new BeanDefinition(beanId, beanName);
 
             // 处理构造器参数
@@ -76,7 +76,7 @@ public class XmlBeanDefinitionReader {
             beanDefinition.setDependsOn(refArray);
 
             // 设置初始化方法
-            beanDefinition.setInitMethodName(initMehtod);
+            beanDefinition.setInitMethodName(initMethod);
 
             // 注入到 BeanFactory 容器
             beanFactory.registerBeanDefinition(beanId, beanDefinition);

@@ -1,6 +1,7 @@
 package com.minis.beans.factory.config;
 
 import com.minis.beans.BeansException;
+import com.minis.beans.factory.BeanFactory;
 
 /**
  * Bean 处理器，用于解释注解
@@ -19,5 +20,7 @@ public interface BeanPostProcessor {
      * Bean初始化之后
      */
     Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException;
+
+    void setBeanFactory(BeanFactory beanFactory);
 
 }

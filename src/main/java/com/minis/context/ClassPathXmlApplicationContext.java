@@ -1,9 +1,9 @@
 package com.minis.context;
 
 import com.minis.beans.BeansException;
-import com.minis.beans.factory.BeanFactory;
 import com.minis.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
-import com.minis.beans.factory.config.AutowireCapableBeanFactory;
+import com.minis.beans.factory.config.ConfigurableListableBeanFactory;
+import com.minis.beans.factory.support.DefaultListableBeanFactory;
 import com.minis.beans.factory.xml.XmlBeanDefinitionReader;
 import com.minis.core.ClassPathXmlResource;
 import com.minis.core.Resource;
@@ -14,9 +14,9 @@ import com.minis.core.Resource;
  * @author <a href="mailto:ambiel127@163.com">Matianhao</a>
  * @since 1.0
  */
-public class ClassPathXmlApplicationContext implements BeanFactory {
+public class ClassPathXmlApplicationContext extends AbstractApplicationContext {
 
-    private AutowireCapableBeanFactory beanFactory;
+    private DefaultListableBeanFactory beanFactory;
 
     public ClassPathXmlApplicationContext(String fileName) {
         this(fileName, true);
@@ -29,7 +29,7 @@ public class ClassPathXmlApplicationContext implements BeanFactory {
     public ClassPathXmlApplicationContext(String fileName, boolean isRefresh) {
         // 解析 XML 文件中的内容
         Resource resource = new ClassPathXmlResource(fileName);
-        AutowireCapableBeanFactory beanFactory = new AutowireCapableBeanFactory();
+        DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
         XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(beanFactory);
 
         // 读取 BeanDefinition 的配置信息，实例化 Bean，然后把它注入到 BeanFactory 容器中。
@@ -37,53 +37,70 @@ public class ClassPathXmlApplicationContext implements BeanFactory {
         this.beanFactory = beanFactory;
 
         if (isRefresh) {
-            refresh();
+            try {
+                refresh();
+            } catch (BeansException e) {
+                e.printStackTrace();
+            }
         }
     }
 
-    private void refresh() {
-        // 注册 bean 处理器
-        registerBeanPostProcessor();
+    // --------- refresh step start ---------
 
-        // Initialize other special beans in specific context subclasses.
-        onFresh();
+    @Override
+    void postProcessBeanFactory(ConfigurableListableBeanFactory bf) {
     }
 
-    private void registerBeanPostProcessor() {
+    @Override
+    void registerBeanPostProcessors(ConfigurableListableBeanFactory bf) {
         this.beanFactory.addBeanPostProcessor(new AutowiredAnnotationBeanPostProcessor());
     }
 
-    private void onFresh() {
+    @Override
+    void initApplicationEventPublisher() {
+        ApplicationEventPublisher aep = new SimpleApplicationEventPublisher();
+        this.setApplicationEventPublisher(aep);
+    }
+
+    @Override
+    void onRefresh() {
         this.beanFactory.refresh();
     }
 
     @Override
-    public Object getBean(String beanName) throws BeansException {
-        return this.beanFactory.getBean(beanName);
+    void registerListeners() {
+        ApplicationListener listener = new ApplicationListener();
+        addApplicationListener(listener);
     }
 
     @Override
-    public void registerBean(String beanName, Object obj) {
-        this.beanFactory.registerBean(beanName, obj);
+    void finishRefresh() {
+        publishEvent(new ContextRefreshEvent("--- Context Refreshed ---"));
+        publishEvent(new ContextRefreshEvent(
+                "--- " + getApplicationName() + " start completed at " + getStartupDate() + " ---"));
+
+    }
+
+    // --------- refresh step end ---------
+
+
+    @Override
+    public ConfigurableListableBeanFactory getBeanFactory() throws IllegalStateException {
+        return this.beanFactory;
+    }
+
+
+    // publish event
+
+    @Override
+    public void addApplicationListener(ApplicationListener listener) {
+        this.getApplicationEventPublisher().addApplicationListener(listener);
+
     }
 
     @Override
-    public boolean containsBean(String beanName) {
-        return this.beanFactory.containsBean(beanName);
-    }
+    public void publishEvent(ApplicationEvent event) {
+        this.getApplicationEventPublisher().publishEvent(event);
 
-    @Override
-    public boolean isSingleton(String beanName) {
-        return false;
-    }
-
-    @Override
-    public boolean isPrototype(String beanName) {
-        return false;
-    }
-
-    @Override
-    public Class<?> getType(String beanName) {
-        return null;
     }
 }

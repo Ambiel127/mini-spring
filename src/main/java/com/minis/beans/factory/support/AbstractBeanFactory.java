@@ -1,8 +1,10 @@
 package com.minis.beans.factory.support;
 
-import com.minis.beans.*;
-import com.minis.beans.factory.BeanFactory;
+import com.minis.beans.BeansException;
+import com.minis.beans.PropertyValue;
+import com.minis.beans.PropertyValues;
 import com.minis.beans.factory.config.BeanDefinition;
+import com.minis.beans.factory.config.ConfigurableBeanFactory;
 import com.minis.beans.factory.config.ConstructorArgumentValue;
 import com.minis.beans.factory.config.ConstructorArgumentValues;
 
@@ -25,10 +27,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * @version 1.4  SimpleBeanFactory 废弃，演变为抽象类，在 getBean 过程中增加 beanPostProcessor 抽象方法进行处理；
  * @since 1.0
  */
-public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry implements BeanFactory, BeanDefinitionRegistry {
+public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry implements ConfigurableBeanFactory, BeanDefinitionRegistry {
 
-    private Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>(256);
-    private List<String> beanDefinitionNames = new ArrayList<>();
+    protected Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>(256);
+    protected List<String> beanDefinitionNames = new ArrayList<>();
 
     /**
      * 早期毛坯实例，bean 的三级缓存

@@ -8,6 +8,8 @@ package com.minis.context;
  */
 public interface ApplicationEventPublisher {
 
-    void publishEvent(ApplicationEventPublisher event);
+    void publishEvent(ApplicationEvent event);
+
+    void addApplicationListener(ApplicationListener listener);
 
 }
